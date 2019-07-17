@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthData } from './auth-data.model';
+import { UserAuthData, LoginData } from './auth-data.model';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
@@ -35,8 +35,10 @@ export class AuthService {
     return this.authStatusListener.asObservable();
   }
 
-  createUser(email: string, password: string) {
-    const authData: AuthData = {
+  createUser(firstName: string, lastName: string, email: string, password: string) {
+    const authData: UserAuthData = {
+      firstName,
+      lastName,
       email,
       password
     };
@@ -49,8 +51,26 @@ export class AuthService {
       });
   }
 
+  getUserInfo(id: string) {
+    const authData = {id};
+    return this.http.post(BACKEND_URL + '/getUserInfo', authData);
+  }
+
+  updateUser(id: string, firstName: string, lastName: string) {
+    const authData = {
+      id,
+      firstName,
+      lastName
+    };
+
+    this.http.patch(BACKEND_URL + '/updateUser', authData)
+      .subscribe(res => {
+        this.router.navigate(['/']);
+      });
+  }
+
   login(email: string, password: string) {
-    const authData: AuthData = {
+    const authData: LoginData = {
       email,
       password
     };

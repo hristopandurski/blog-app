@@ -1,20 +1,42 @@
 <mat-toolbar color="primary">
   <span>
-    <a routerLink="/">My Messages</a>
+    <a routerLink="/">My Posts</a>
   </span>
   <span class="spacer"></span>
   <ul>
     <li *ngIf="isUserAuthenticated">
-      <a mat-button routerLink="/create" routerLinkActive="mat-accent">New Post</a>
+      <a mat-button routerLink="/create" routerLinkActive="mat-accent">
+        <mat-icon class="header-icon">add</mat-icon>
+        <span>New Post</span>
+      </a>
     </li>
     <li *ngIf="!isUserAuthenticated">
-      <a mat-button routerLink="/auth/login" routerLinkActive="mat-accent">Login</a>
+      <a mat-button routerLink="/auth/login" routerLinkActive="mat-accent">
+        <mat-icon class="header-icon">arrow_forward</mat-icon>
+        <span>Login</span>
+      </a>
     </li>
     <li *ngIf="!isUserAuthenticated">
-      <a mat-button routerLink="/auth/signup" routerLinkActive="mat-accent">Signup</a>
+      <a mat-button routerLink="/auth/signup" routerLinkActive="mat-accent">
+        <mat-icon class="header-icon">person_pin</mat-icon>
+        <span>Signup</span>
+      </a>
     </li>
     <li *ngIf="isUserAuthenticated">
-      <button mat-button (click)="onLogout()">Logout</button>
+      <button mat-button [matMenuTriggerFor]="settings">
+        <mat-icon class="header-icon">settings</mat-icon>
+        <span>Settings</span>
+      </button>
+      <mat-menu #settings="matMenu" panelClass="'settings-menu'" [overlapTrigger]="false">
+        <button mat-menu-item (click)="toProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        <button mat-menu-item (click)="onLogout()">
+          <mat-icon>arrow_back</mat-icon>
+          Logout
+        </button>
+      </mat-menu>
     </li>
   </ul>
 </mat-toolbar>

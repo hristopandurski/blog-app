@@ -37,18 +37,6 @@
         placeholder="Email Address"/>
       <mat-error *ngIf="emailInput.invalid">Please enter a valid email.</mat-error>
     </mat-form-field>
-    <mat-form-field>
-      <input
-        matInput
-        name="email"
-        ngModel
-        #emailInput="ngModel"
-        type="email"
-        required
-        email
-        placeholder="Email Address"/>
-      <mat-error *ngIf="emailInput.invalid">Please enter a valid email.</mat-error>
-    </mat-form-field>
       <mat-form-field>
         <input 
           matInput
@@ -62,6 +50,7 @@
       </mat-form-field>
       <button
         *ngIf="!isLoading"
+        class="submit-button"
         mat-raised-button
         color="accent"
         type="submit">

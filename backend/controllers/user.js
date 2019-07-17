@@ -8,6 +8,8 @@ exports.createUser = (req, res, next) => {
     .hash(req.body.password, 10)
     .then(hash => {
       const user = new User({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
         email: req.body.email,
         password: hash
       });
@@ -23,6 +25,46 @@ exports.createUser = (req, res, next) => {
             message: 'Invalid authentication credentials.'
           })
         })
+    });
+}
+
+exports.userInfo = (req, res, next) => {
+  User
+    .findById(req.body.id)
+    .then(user => {
+      if (!user) {
+        return res.status(401).json({
+          message: 'No user data found.'
+        })
+      }
+      res.status(200).json(user);
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: 'Fetching user data failed.'
+      });
+    })
+}
+
+exports.userUpdate = (req, res, next) => {
+  const updated = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName
+  }
+
+  User
+    .updateOne({ _id: req.body.id }, updated)
+    .then(result => {
+      if (result.n > 0) {
+        res.status(200).json({ message: 'Update successful.' });
+      } else {
+        res.status(401).json({ message: 'Not authorized.' });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: 'Could not update user.'
+      });
     });
 }
 
