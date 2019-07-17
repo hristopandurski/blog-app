@@ -8,7 +8,7 @@ const userRoutes = require('./routes/user');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://hristo2:LzcnYwbt3QepUDWu@cluster0-a06wj.mongodb.net/node-angular?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://hristo2:' + process.env.MONGO_ATLAS_PW + '@cluster0-a06wj.mongodb.net/node-angular?retryWrites=true&w=majority')
   .then(() => {
     console.log('Connected to database.');
   })
@@ -17,7 +17,8 @@ mongoose.connect('mongodb+srv://hristo2:LzcnYwbt3QepUDWu@cluster0-a06wj.mongodb.
   });
 
 app.use(bodyParser.json());
-app.use('/images', express.static(path.join('backend/images')));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/images', express.static(path.join('images')));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
