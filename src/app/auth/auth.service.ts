@@ -35,6 +35,16 @@ export class AuthService {
     return this.authStatusListener.asObservable();
   }
 
+  createUserStats(email: string) {
+    const authData = { email };
+    this.http.post(environment.apiUrl + '/stats/createStats', authData)
+      .subscribe(res => {
+        this.router.navigate(['/']);
+      }, error => {
+        this.authStatusListener.next(false);
+      });
+  }
+
   createUser(firstName: string, lastName: string, email: string, password: string) {
     const authData: UserAuthData = {
       firstName,
@@ -44,8 +54,8 @@ export class AuthService {
     };
 
     this.http.post(BACKEND_URL + '/signup', authData)
-      .subscribe(response => {
-        this.router.navigate(['/']);
+      .subscribe((response: UserAuthData) => {
+        this.createUserStats(response.email);
       }, error => {
         this.authStatusListener.next(false);
       });
@@ -54,6 +64,21 @@ export class AuthService {
   getUserInfo(id: string) {
     const authData = {id};
     return this.http.post(BACKEND_URL + '/getUserInfo', authData);
+  }
+
+  getUserStats(email: string) {
+    const queryParams = `?email=${email}`;
+
+    return this.http.get(environment.apiUrl + '/stats/getStats' + queryParams);
+  }
+
+  updateUserStats(email: string) {
+    const authData = { email };
+
+    this.http.patch(environment.apiUrl + '/stats/updateStats', authData)
+      .subscribe(res => {
+        this.router.navigate(['/']);
+      });
   }
 
   updateUser(id: string, firstName: string, lastName: string) {
@@ -90,7 +115,8 @@ export class AuthService {
           const now = new Date();
           const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
           this.saveAuthData(this.token, expirationDate, this.userId);
-          this.router.navigate(['/']);
+          this.updateUserStats(email);
+          // this.router.navigate(['/']);
         }
       }, error => {
         this.authStatusListener.next(false);
@@ -125,7 +151,6 @@ export class AuthService {
   }
 
   private setAuthTimer(duration: number) {
-    console.log('timer: ' + duration);
     this.tokenTimer = setTimeout(() => {
       this.logout();
     }, duration * 1000);
