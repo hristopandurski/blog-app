@@ -9,7 +9,7 @@
           placeholder="Post Title"/>
         <mat-error *ngIf="form.get('title').invalid">Please enter a post title.</mat-error>
       </mat-form-field>
-      <div>
+      <div class="image-picker-wrapper">
         <button mat-stroked-button type="button" (click)="filePicker.click()">Pick Image</button>
         <input type="file" #filePicker (change)="onImagePicked($event)" />
       </div>
@@ -23,6 +23,20 @@
           formControlName="content"
           placeholder="Post Content"></textarea>
         <mat-error *ngIf="form.get('content').invalid">Please enter a post content.</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-chip-list #chipList>
+          <mat-chip *ngFor="let label of labels" [selectable]="true"
+                   [removable]="true" (removed)="remove(label)">
+            {{label.name}}
+            <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+          </mat-chip>
+          <input placeholder="Post labels"
+                 [matChipInputFor]="chipList"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 [matChipInputAddOnBlur]="true"
+                 (matChipInputTokenEnd)="add($event)">
+        </mat-chip-list>
       </mat-form-field>
       <button 
         mat-raised-button

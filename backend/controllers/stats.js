@@ -42,13 +42,11 @@ exports.createStats = (req, res, next) => {
 exports.updateStats = (req, res, next) => {
   const date = getDates();
 
+  // Find a record for the current user with the current date.
   Stats
     .findOne({
       user: req.body.email,
-      date: {
-        $gte: date.oldDate,
-        $lte: date.currentDate
-      }
+      date: date.currentDate
     })
     .then(result => {
       const newStat = {
@@ -57,6 +55,7 @@ exports.updateStats = (req, res, next) => {
         entries: ++result.entries
       };
 
+      // In case such record exists, update the entries column incrementing it by 1.
       Stats
         .updateOne({
           user: req.body.email,
@@ -71,10 +70,26 @@ exports.updateStats = (req, res, next) => {
           });
         });
     })
+    // Otherwise, create a new stats record.
     .catch(error => {
-      res.status(500).json({
-        message: 'Could not find stats.'
-      });
+      const date = getDates();
+      const newStats = {
+        date: date.currentDate,
+        user: req.body.email,
+        entries: 1
+      };
+      const stats = new Stats(newStats);
+    
+      stats
+        .save()
+        .then(createdStats => {
+          res.status(201).json(createdStats);
+        })
+        .catch(error => {
+          res.status(500).json({
+            message: 'Creating stats failed.'
+          })
+        });
     });
 };
 

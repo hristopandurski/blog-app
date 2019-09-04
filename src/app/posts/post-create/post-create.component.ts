@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
@@ -7,6 +8,11 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { mimeType } from './mime-type.validator';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { MatChipInputEvent } from '@angular/material';
+
+export interface Label {
+  name: string;
+}
 
 @Component({
   selector: 'app-post-create',
@@ -20,6 +26,8 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   isLoading = false;
   form: FormGroup;
   imagePreview: string | ArrayBuffer;
+  labels = [];
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   private mode = 'create';
   private postId: string;
   private authStatusSub: Subscription;
@@ -90,6 +98,29 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       this.imagePreview = reader.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  add(event: MatChipInputEvent) {
+    const input = event.input;
+    const value = event.value;
+
+    // Add the label
+    if ((value || '').trim()) {
+      this.labels.push({name: value.trim()});
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  remove(label: Label) {
+    const index = this.labels.indexOf(label);
+
+    if (index >= 0) {
+      this.labels.splice(index, 1);
+    }
   }
 
   onSavePost() {
