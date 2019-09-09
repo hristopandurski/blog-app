@@ -23,3 +23,26 @@ mat-spinner {
 mat-paginator {
   margin-top: 1rem;
 }
+
+.all-labels-container {
+  margin-bottom: 20px;
+
+  .all-labels {
+    margin-right: 10px;
+  }
+}
+
+.post-label {
+  margin-right: 10px;
+  padding: 5px;
+  background: #3f51b5;
+  color: white;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.post-text {
+  margin-right: 10px;
+  padding-top: 3px;
+}

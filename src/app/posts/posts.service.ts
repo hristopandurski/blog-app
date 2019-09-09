@@ -29,6 +29,7 @@ export class PostsService {
               content: post.content,
               id: post._id,
               imagePath: post.imagePath,
+              labels: JSON.parse(post.labels[0]),
               creator: post.creator
             };
           }),
@@ -49,16 +50,17 @@ export class PostsService {
   }
 
   getPost(id: string) {
-    return this.http.get<{_id: string, title: string, content: string, imagePath: string, creator: string}>(
+    return this.http.get<{_id: string, title: string, content: string, imagePath: string, labels: string[], creator: string}>(
       BACKEND_URL + id
     );
   }
 
-  addPost(title: string, content: string, image: File) {
+  addPost(title: string, content: string, image: File, labels: string[]) {
     const postData = new FormData();
     postData.append('title', title);
     postData.append('content', content);
     postData.append('image', image, title);
+    postData.append('labels', JSON.stringify(labels));
 
     this.http.post<{message: string, post: Post }>(BACKEND_URL, postData)
       .subscribe((responseData) => {
@@ -66,7 +68,7 @@ export class PostsService {
       });
   }
 
-  updatePost(id: string, title: string, content: string, image: File | string) {
+  updatePost(id: string, title: string, content: string, image: File | string, labels: string[]) {
     let postData: Post | FormData;
     if (typeof(image) === 'object') {
       postData = new FormData();
@@ -74,12 +76,14 @@ export class PostsService {
       postData.append('title', title);
       postData.append('content', content);
       postData.append('image', image, title);
+      postData.append('labels', JSON.stringify(labels));
     } else {
       postData = {
         id,
         title,
         content,
         imagePath: image,
+        labels,
         creator: null
       };
     }

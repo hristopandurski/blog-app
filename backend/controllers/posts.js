@@ -6,6 +6,7 @@ exports.createPost = (req, res, next) => {
     title: req.body.title,
     content: req.body.content,
     imagePath: url + '/images/' + req.file.filename,
+    labels: req.body.labels,
     creator: req.userData.userId
   });
   post
@@ -37,6 +38,7 @@ exports.updatePost = (req, res, next) => {
     title: req.body.title,
     content: req.body.content,
     imagePath,
+    labels,
     creator: req.userData.userId
   });
 

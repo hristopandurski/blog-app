@@ -6,7 +6,7 @@
           matInput
           type="text"
           formControlName="title"
-          placeholder="Post Title"/>
+          placeholder="Title"/>
         <mat-error *ngIf="form.get('title').invalid">Please enter a post title.</mat-error>
       </mat-form-field>
       <div class="image-picker-wrapper">
@@ -21,26 +21,20 @@
           matInput
           rows="4"
           formControlName="content"
-          placeholder="Post Content"></textarea>
+          placeholder="Content"></textarea>
         <mat-error *ngIf="form.get('content').invalid">Please enter a post content.</mat-error>
       </mat-form-field>
       <mat-form-field>
-        <mat-chip-list #chipList>
-          <mat-chip *ngFor="let label of labels" [selectable]="true"
-                   [removable]="true" (removed)="remove(label)">
-            {{label.name}}
-            <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
-          </mat-chip>
-          <input placeholder="Post labels"
-                 [matChipInputFor]="chipList"
-                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                 [matChipInputAddOnBlur]="true"
-                 (matChipInputTokenEnd)="add($event)">
-        </mat-chip-list>
+        <mat-label>Labels</mat-label>
+        <mat-select formControlName="labels" multiple>
+          <mat-option *ngFor="let label of labelsList" [value]="label">{{label}}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('labels').invalid">Please select post labels.</mat-error>
       </mat-form-field>
       <button 
         mat-raised-button
         color="accent"
+        class="submit-button"
         type="submit">Save Post</button>
   </form>
 </mat-card>

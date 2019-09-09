@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
@@ -8,7 +7,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { mimeType } from './mime-type.validator';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
-import { MatChipInputEvent } from '@angular/material';
+import { LABELS_LIST } from './labels-list';
 
 export interface Label {
   name: string;
@@ -26,8 +25,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   isLoading = false;
   form: FormGroup;
   imagePreview: string | ArrayBuffer;
-  labels = [];
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+  labelsList: string[] = LABELS_LIST;
   private mode = 'create';
   private postId: string;
   private authStatusSub: Subscription;
@@ -55,7 +53,10 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       image: new FormControl(null, {
         validators: [Validators.required],
         asyncValidators: [mimeType]
-      })
+      }),
+      labels: new FormControl(null, {
+        validators: [Validators.required]
+      }),
     });
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -70,7 +71,8 @@ export class PostCreateComponent implements OnInit, OnDestroy {
             title: postData.title,
             content: postData.content,
             imagePath: postData.imagePath,
-            creator: postData.creator
+            creator: postData.creator,
+            labels: postData.labels
           };
           this.form.setValue({
             title: this.post.title,
@@ -100,29 +102,6 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
   }
 
-  add(event: MatChipInputEvent) {
-    const input = event.input;
-    const value = event.value;
-
-    // Add the label
-    if ((value || '').trim()) {
-      this.labels.push({name: value.trim()});
-    }
-
-    // Reset the input value
-    if (input) {
-      input.value = '';
-    }
-  }
-
-  remove(label: Label) {
-    const index = this.labels.indexOf(label);
-
-    if (index >= 0) {
-      this.labels.splice(index, 1);
-    }
-  }
-
   onSavePost() {
     if (this.form.invalid) {
       return;
@@ -130,13 +109,19 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     if (this.mode === 'create') {
-      this.postService.addPost(this.form.value.title, this.form.value.content, this.form.value.image);
+      this.postService.addPost(
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image,
+        this.form.value.labels
+      );
     } else {
       this.postService.updatePost(
         this.postId,
         this.form.value.title,
         this.form.value.content,
-        this.form.value.image
+        this.form.value.image,
+        this.form.value.labels
       );
     }
 

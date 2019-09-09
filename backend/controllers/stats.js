@@ -70,7 +70,7 @@ exports.updateStats = (req, res, next) => {
           });
         });
     })
-    // Otherwise, create a new stats record.
+    // Otherwise, create a new stats record for the current date.
     .catch(error => {
       const date = getDates();
       const newStats = {

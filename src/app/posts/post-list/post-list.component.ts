@@ -5,6 +5,7 @@ import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
 import { PageEvent } from '@angular/material';
 import { AuthService } from 'src/app/auth/auth.service';
+import { LABELS_LIST } from '../post-create/labels-list';
 
 @Component({
   selector: 'app-post-list',
@@ -13,12 +14,14 @@ import { AuthService } from 'src/app/auth/auth.service';
 })
 export class PostListComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
+  allPosts: Post[];
   isLoading = false;
   totalPosts = 0;
   postsPerPage = 2;
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
   isUserAuthenticated = false;
+  allLabels = LABELS_LIST;
   userId: string;
   private postsSub: Subscription;
   private authStatusSub: Subscription;
@@ -33,6 +36,7 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.postsSub = this.postsService.getPostUpdateListener()
       .subscribe((postData: { posts: Post[], postCount: number }) => {
         this.posts = postData.posts;
+        this.allPosts = this.posts;
         this.totalPosts = postData.postCount;
         this.isLoading = false;
       });
@@ -66,5 +70,9 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.currentPage = pageData.pageIndex + 1;
     this.postsPerPage = pageData.pageSize;
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
+  }
+
+  filterByLabel(label) {
+    this.posts = this.allPosts.filter(post => post.labels.some(currLabel => currLabel === label));
   }
 }
