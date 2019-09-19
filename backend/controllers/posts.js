@@ -38,7 +38,7 @@ exports.updatePost = (req, res, next) => {
     title: req.body.title,
     content: req.body.content,
     imagePath,
-    labels,
+    labels: req.body.labels,
     creator: req.userData.userId
   });
 

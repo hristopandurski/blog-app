@@ -8,6 +8,7 @@ import { mimeType } from './mime-type.validator';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { LABELS_LIST } from './labels-list';
+import { isJson } from '../post-utils';
 
 export interface Label {
   name: string;
@@ -65,6 +66,15 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.postId = paramMap.get('postId');
         this.isLoading = true;
         this.postService.getPost(this.postId).subscribe(postData => {
+          let postLabels;
+
+          // Parse the labels in case they are stringified
+          if (isJson(postData.labels[0])) {
+            postLabels = JSON.parse(postData.labels[0]);
+          } else {
+            postLabels = postData.labels;
+          }
+
           this.isLoading = false;
           this.post = {
             id: postData._id,
@@ -72,12 +82,13 @@ export class PostCreateComponent implements OnInit, OnDestroy {
             content: postData.content,
             imagePath: postData.imagePath,
             creator: postData.creator,
-            labels: postData.labels
+            labels: postLabels
           };
           this.form.setValue({
             title: this.post.title,
             content: this.post.content,
-            image: this.post.imagePath
+            image: this.post.imagePath,
+            labels: this.post.labels
           });
         });
       } else {

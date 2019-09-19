@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { Post } from './post.model';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { isJson } from './post-utils';
 
 const BACKEND_URL = environment.apiUrl + '/posts/';
 
@@ -18,18 +19,26 @@ export class PostsService {
 
   getPosts(postsPerPage: number, currentPage: number) {
     const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
+    let postLabels;
 
     return this.http
       .get<{ message: string, posts: any, maxPosts: number }>(BACKEND_URL + queryParams)
       .pipe(map((postData) => {
         return {
           posts: postData.posts.map(post => {
+            // Parse the labels in case they are stringified
+            if (isJson(post.labels[0])) {
+              postLabels = JSON.parse(post.labels[0]);
+            } else {
+              postLabels = post.labels;
+            }
+
             return {
               title: post.title,
               content: post.content,
               id: post._id,
               imagePath: post.imagePath,
-              labels: JSON.parse(post.labels[0]),
+              labels: postLabels,
               creator: post.creator
             };
           }),
