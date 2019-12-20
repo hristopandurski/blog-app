@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService } from '../auth.service';
+import { AuthService as InternalAuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
+import { AuthService, FacebookLoginProvider } from 'angularx-social-login';
+
 
 @Component({
   selector: 'app-login',
@@ -11,19 +13,29 @@ import { Subscription } from 'rxjs';
 export class LoginComponent implements OnInit, OnDestroy {
   isLoading = false;
   private authStatusSub: Subscription;
+  private socialAuthStatusSub: Subscription;
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private internalAuthService: InternalAuthService,
+    private socialAuthService: AuthService
+  ) { }
 
   ngOnInit() {
-    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(
+    this.authStatusSub = this.internalAuthService.getAuthStatusListener().subscribe(
       authStatus => {
         this.isLoading = false;
       }
     );
+
+    this.socialAuthStatusSub = this.socialAuthService.authState.subscribe((user) => {
+      if (!user) { return; }
+      this.internalAuthService.facebookLogin(user.email);
+    });
   }
 
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();
+    this.socialAuthStatusSub.unsubscribe();
   }
 
   onLogin(form: NgForm) {
@@ -32,6 +44,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
-    this.authService.login(form.value.email, form.value.password);
+    this.internalAuthService.login(form.value.email, form.value.password);
+  }
+
+  signInWithFB(): void {
+    this.socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID).catch(err => {});
   }
 }

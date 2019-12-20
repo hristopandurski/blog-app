@@ -105,22 +105,39 @@ export class AuthService {
       authData
     )
       .subscribe(response => {
-        this.token = response.token;
-        if (this.token) {
-          const expiresInDuration = response.expiresIn;
-          this.setAuthTimer(expiresInDuration);
-          this.isAuthenticated = true;
-          this.userId = response.userId;
-          this.authStatusListener.next(true);
-          const now = new Date();
-          const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
-          this.saveAuthData(this.token, expirationDate, this.userId);
-          this.updateUserStats(email);
-          // this.router.navigate(['/']);
-        }
+        this.handleLogin(response, email);
       }, error => {
         this.authStatusListener.next(false);
       });
+  }
+
+  facebookLogin(email: string) {
+    const authData = { email };
+
+    this.http.post<{ token: string, expiresIn: number; userId: string }>(
+      BACKEND_URL + '/login/facebook',
+      authData
+    )
+    .subscribe(response => {
+      this.handleLogin(response, email);
+    }, error => {
+      this.authStatusListener.next(false);
+    });
+  }
+
+  private handleLogin(response, email) {
+    this.token = response.token;
+    if (this.token) {
+      const expiresInDuration = response.expiresIn;
+      this.setAuthTimer(expiresInDuration);
+      this.isAuthenticated = true;
+      this.userId = response.userId;
+      this.authStatusListener.next(true);
+      const now = new Date();
+      const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
+      this.saveAuthData(this.token, expirationDate, this.userId);
+      this.updateUserStats(email);
+    }
   }
 
   autoAuthUser() {

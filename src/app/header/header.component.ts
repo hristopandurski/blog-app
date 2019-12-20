@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
+import { AuthService as InternalAuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from 'angularx-social-login';
 
 @Component({
   selector: 'app-header',
@@ -12,7 +13,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isUserAuthenticated = false;
   private authListenerSubs: Subscription;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: InternalAuthService,
+    private socialAuthService: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.isUserAuthenticated = this.authService.getIsAuth();
@@ -27,6 +32,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.authService.logout();
+    this.socialAuthService.signOut().catch(err => {});
   }
 
   toProfile() {

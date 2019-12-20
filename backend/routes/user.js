@@ -12,4 +12,6 @@ router.patch('/updateUser', UserController.userUpdate);
 
 router.post('/login', UserController.userLogin);
 
+router.post('/login/facebook', UserController.facebookLogin);
+
 module.exports = router;

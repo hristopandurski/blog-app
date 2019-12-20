@@ -2,34 +2,44 @@
   <mat-spinner *ngIf="isLoading"></mat-spinner>
   <form (submit)="onLogin(loginForm)" #loginForm="ngForm" *ngIf="!isLoading">
     <mat-form-field>
-        <input
-          matInput
-          name="email"
-          ngModel
-          #emailInput="ngModel"
-          type="email"
-          required
-          email
-          placeholder="Email Address"/>
-        <mat-error *ngIf="emailInput.invalid">Please enter a valid email.</mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <input 
-          matInput
-          name="password"
-          ngModel
-          #passwordInput="ngModel"
-          required
-          type="password"
-          placeholder="Password"/>
-        <mat-error *ngIf="passwordInput.invalid">Please enter a valid password.</mat-error>
-      </mat-form-field>
-      <button
-        *ngIf="!isLoading"
-        mat-raised-button
-        color="accent"
-        type="submit">
-        Login
+      <input
+        matInput
+        name="email"
+        ngModel
+        #emailInput="ngModel"
+        type="email"
+        required
+        email
+        placeholder="Email Address"/>
+      <mat-error *ngIf="emailInput.invalid">Please enter a valid email.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input 
+        matInput
+        name="password"
+        ngModel
+        #passwordInput="ngModel"
+        required
+        type="password"
+        placeholder="Password"/>
+      <mat-error *ngIf="passwordInput.invalid">Please enter a valid password.</mat-error>
+    </mat-form-field>
+    <button
+      *ngIf="!isLoading"
+      mat-raised-button
+      color="accent"
+      type="submit">
+      Login
     </button>
+    <div class="fb-login-container">
+      <button
+        type="button"
+        mat-raised-button
+        *ngIf="!isLoading"
+        color="primary"
+        (click)="signInWithFB()">
+        Facebook
+      </button>
+    </div>
   </form>
 </mat-card>

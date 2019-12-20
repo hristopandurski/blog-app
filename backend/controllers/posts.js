@@ -7,7 +7,8 @@ exports.createPost = (req, res, next) => {
     content: req.body.content,
     imagePath: url + '/images/' + req.file.filename,
     labels: req.body.labels,
-    creator: req.userData.userId
+    creator: req.userData.userId,
+    deleted: false
   });
   post
     .save()
@@ -39,7 +40,8 @@ exports.updatePost = (req, res, next) => {
     content: req.body.content,
     imagePath,
     labels: req.body.labels,
-    creator: req.userData.userId
+    creator: req.userData.userId,
+    deleted: false
   });
 
   Post.updateOne({_id: req.params.id, creator: req.userData.userId}, post)
@@ -60,7 +62,7 @@ exports.updatePost = (req, res, next) => {
 exports.getPosts = (req, res, next) => {
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
-  const postQuery = Post.find();
+  const postQuery = Post.find({ deleted: false });
   let fetchedPosts;
 
   if (pageSize && currentPage) {
@@ -106,7 +108,7 @@ exports.getPost = (req, res, next) => {
 }
 
 exports.deletePost = (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId })
+  Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, { deleted: true })
     .then(result => {
       if (result.n > 0) {
         res.status(200).json({ message: 'Post deleted.' });
