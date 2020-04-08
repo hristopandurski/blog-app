@@ -26,12 +26,9 @@ mat-paginator {
   margin-top: 1rem;
 }
 
-.all-labels-container {
+.all-labels {
   margin-bottom: 20px;
-
-  .all-labels {
-    margin-right: 10px;
-  }
+  margin-right: 10px;
 }
 
 .post-label {
@@ -42,6 +39,12 @@ mat-paginator {
   border-radius: 8px;
   font-size: 12px;
   cursor: pointer;
+}
+
+@media all and (max-width: 960px) {
+  .post-label {
+    display: none;
+  }
 }
 
 .post-text {
